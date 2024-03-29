@@ -26,7 +26,7 @@ def load_and_preprocess_data():
     # 데이터 로드, 현재 path
     current_path = os.path.dirname(os.path.abspath(__file__)) # 현재 파일의 절대 경로
     # data path는 현재 파일의 상위 디렉토리의 data 폴더
-    data_path = os.path.join(current_path, '..', 'data')
+    data_path = os.path.join(current_path, '..', 'data/stl10_binary')
     train_images = load_stl10_dataset(data_path + '/train_X.bin')
     train_labels = np.fromfile(data_path + '/train_y.bin', dtype=np.uint8) - 1
     test_images = load_stl10_dataset(data_path + '/test_X.bin')
