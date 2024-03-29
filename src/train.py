@@ -4,6 +4,8 @@ from tensorflow.keras import datasets, layers, models, optimizers
 from models.cnn import CNN
 import numpy as np
 import os
+import sys
+import argparse
 
 # 데이터 로드 및 전처리
 # 바이너리 파일에서 데이터 로딩 함수
@@ -39,17 +41,25 @@ def load_and_preprocess_data():
 
 
 def main():
+    # argparse를 사용하여 커맨드 라인 인자 처리
+    parser = argparse.ArgumentParser(description='Train a CNN on the STL-10 dataset.')
+    parser.add_argument('--epochs', type=int, default=10, help='Number of epochs to train the model.')
+    args = parser.parse_args()
+
     (train_images, train_labels), (test_images, test_labels) = load_and_preprocess_data()
     model = CNN()
+    # 기존 모델이 존재할 경우, 불러와서 사용
+    if os.path.exists('models/trained_models/cnn.h5'):
+        model = models.load_model('models/trained_models/cnn.h5')
 
     model.compile(optimizer='adam',
                   loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
                   metrics=['accuracy'])
-
-    model.fit(train_images, train_labels, epochs=10, validation_data=(test_images, test_labels))
+    # argparse를 사용하여 받은 epochs 값을 사용
+    model.fit(train_images, train_labels, epochs=args.epochs, validation_data=(test_images, test_labels))
 
     # 모델 저장
-    model.save('AI_Project1/models/trained_models/cnn_model.h5')
+    model.save('models/trained_models/cnn.h5')
 
 if __name__ == '__main__':
     main()
