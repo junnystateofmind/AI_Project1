@@ -1,12 +1,8 @@
 import tensorflow as tf
 from tensorflow.keras import datasets
+from .train import load_and_preprocess_data
 
 # 데이터 로드 및 전처리
-def load_and_preprocess_data():
-    # 이 예시에서는 CIFAR10을 사용합니다. STL-10을 사용할 경우, 적절히 대체해주세요.
-    (_, _), (test_images, test_labels) = datasets.cifar10.load_data()
-    test_images = test_images / 255.0
-    return test_images, test_labels
 
 def main():
     test_images, test_labels = load_and_preprocess_data()
