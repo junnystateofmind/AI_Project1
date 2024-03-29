@@ -3,6 +3,7 @@ from tensorflow.keras import datasets, layers, models, optimizers
 # models/cnn 모듈에서 CNN 함수를 불러옴
 from models.cnn import CNN
 import numpy as np
+import os
 
 # 데이터 로드 및 전처리
 # 바이너리 파일에서 데이터 로딩 함수
@@ -20,11 +21,14 @@ def preprocess_images(images):
     return images
 
 def load_and_preprocess_data():
-    # 데이터 로드
-    train_images = load_stl10_dataset('../data/stl10_binary/train_X.bin')
-    train_labels = np.fromfile('../data/stl10_binary/train_y.bin', dtype=np.uint8)
-    test_images = load_stl10_dataset('../data/stl10_binary/test_X.bin')
-    test_labels = np.fromfile('../data/stl10_binary/test_y.bin', dtype=np.uint8)
+    # 데이터 로드, 현재 path
+    current_path = os.path.dirname(os.path.abspath(__file__)) # 현재 파일의 절대 경로
+    # data path는 현재 파일의 상위 디렉토리의 data 폴더
+    data_path = os.path.join(current_path, '..', 'data')
+    train_images = load_stl10_dataset(data_path + '/train_X.bin')
+    train_labels = np.fromfile(data_path + '/train_y.bin', dtype=np.uint8) - 1
+    test_images = load_stl10_dataset(data_path + '/test_X.bin')
+    test_labels = np.fromfile(data_path + '/test_y.bin', dtype=np.uint8) - 1
 
     # 데이터 전처리
     train_images = preprocess_images(train_images)
@@ -45,7 +49,7 @@ def main():
     model.fit(train_images, train_labels, epochs=10, validation_data=(test_images, test_labels))
 
     # 모델 저장
-    model.save('model/my_model')
+    model.save('AI_Project1/models/trained_models/cnn_model.h5')
 
 if __name__ == '__main__':
     main()
