@@ -14,14 +14,14 @@ def residual_block(x, filters):
     shortcut = layers.Conv2D(filters, (1, 1), padding='same')(x)
 
     # Depthwise Convolution
-    x = layers.DepthwiseConv2D((3, 3), activation='relu', padding='same')(x)
+    x = layers.DepthwiseConv2D((3, 3), activation='leaky_relu', padding='same')(x)
 
     # Pointwise Convolution
-    x = layers.Conv2D(filters, (1, 1), activation='relu', padding='same')(x)
+    x = layers.Conv2D(filters, (1, 1), activation='leaky_relu', padding='same')(x)
 
     # 입력(x)과 shortcut을 더함
     x = layers.add([x, shortcut])
-    x = layers.Activation('relu')(x)
+    x = layers.Activation('leaky_relu')(x)
 
     return x
 
@@ -30,7 +30,7 @@ def CNN(input_shape=(96, 96, 3), num_classes=10):
     inputs = layers.Input(shape=input_shape)
 
     # 첫 번째 합성곱 레이어
-    x = layers.Conv2D(64, (3, 3), activation='relu')(inputs)
+    x = layers.Conv2D(64, (3, 3), activation='leaky_relu')(inputs)
     x = layers.MaxPooling2D((2, 2))(x)
 
     # 잔차 블록 추가
@@ -48,7 +48,7 @@ def CNN(input_shape=(96, 96, 3), num_classes=10):
 
     # # 전역 평균 풀링과 분류 레이어
     x = layers.GlobalAveragePooling2D()(x)
-    x = layers.Dense(64, activation='relu')(x)
+    x = layers.Dense(64, activation='leaky_relu')(x)
     outputs = layers.Dense(num_classes)(x)
 
     # 각주 부분은 GlobalAveragePooling2D를 사용하지 않고 Flatten과 Dense 레이어를 사용한 경우
