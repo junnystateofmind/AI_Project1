@@ -127,7 +127,7 @@ print(train_ds.data.shape)
 
 모델 학습
 ```bash
-!python -m src.train --epochs 100
+!python -m src.train  --epochs=50 --batch_size=64 --lr=0.01
 ```
 
 텐서보드 실행

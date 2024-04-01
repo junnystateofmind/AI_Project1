@@ -2,7 +2,7 @@ import tensorflow as tf
 from tensorflow.keras import datasets, layers, models, optimizers
 from models.cnn import CNN
 import numpy as np
-from tensorflow.keras.callbacks import TensorBoard, ModelCheckpoint, LearningRateScheduler, EarlyStopping
+from tensorflow.keras.callbacks import TensorBoard, ModelCheckpoint, LearningRateScheduler, EarlyStopping, Callback
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import datetime
 import os
@@ -57,6 +57,17 @@ def scheduler(epoch, lr):
     else:
         return lr * tf.math.exp(-0.1)
 
+
+class CustomModelCheckpoint(Callback):
+    def __init__(self, filepath, save_freq):
+        super(CustomModelCheckpoint, self).__init__()
+        self.filepath = filepath
+        self.save_freq = save_freq
+
+    def on_epoch_end(self, epoch, logs=None):
+        if (epoch + 1) % self.save_freq == 0:  # 에포크는 0부터 시작하므로 +1
+            self.model.save(self.filepath.format(epoch=epoch + 1))
+
 # 모델 정의
 
 
@@ -68,8 +79,6 @@ def main():
     parser.add_argument('--lr', type=float, default=0.001, help='Initial learning rate.')
 
     args = parser.parse_args()
-    checkpoint_callback = ModelCheckpoint('models/trained_models/cnn.h5', save_weights_only=False,
-                                      save_freq='epoch', verbose=1)
     (train_images, train_labels), (test_images, test_labels) = load_and_preprocess_data()
     # data augmentation
     datagen = create_data_augmentation_generator()
@@ -86,8 +95,11 @@ def main():
     tensorboard_callback = TensorBoard(log_dir=log_dir, histogram_freq=1)
     model.compile(optimizer=optimizers.Adam(learning_rate=args.lr), loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True), metrics=['accuracy'])
 
-    # argparse를 사용하여 받은 epochs 값을 사용
-    model.fit(train_generator, epochs=args.epochs, validation_data=(test_images, test_labels), callbacks=[tensorboard_callback, checkpoint_callback, lr_scheduler])
+    # 커스텀 모델 체크포인트 콜백
+    custom_checkpoint_callback = CustomModelCheckpoint('models/trained_models/cnn_{epoch}.h5', save_freq=5)
+
+    # argparse를 사용하여 받은 epochs만큼 모델 학습
+    model.fit(train_generator, epochs=args.epochs, validation_data=(test_images, test_labels), callbacks=[tensorboard_callback, lr_scheduler, custom_checkpoint_callback])
 
     # 모델 저장
     model.save('models/trained_models/cnn.h5')
