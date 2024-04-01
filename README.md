@@ -37,19 +37,17 @@ PLAGIARISM WILL NOT BE TOLERATED: Please be aware that copying assignments will 
 AI_Project1/
 │
 ├── data/                   # 데이터셋을 저장하는 디렉토리
-│   ├── raw/                # 원본 STL-10 데이터셋
-│   └── processed/          # 전처리된 데이터셋
+│   └── stl10_binary/       # STL-10 데이터셋
 │
 ├── models/                 # 모델 아키텍처 및 학습된 모델 파일
 │   ├── cnn_model.py        # CNN 모델 아키텍처 정의
 │   └── trained_models/     # 학습된 모델 파일 저장 위치
 │
-├── notebooks/              # Jupyter 노트북 파일 (탐색적 데이터 분석, 시각화 등)
-│   └── EDA_and_Visualization.ipynb
+├── notebooks/              # Jupyter 노트북 파일
+│   └── test.ipynb
 │
 ├── src/                    # 소스 코드
 │   ├── __init__.py
-│   ├── data_preprocessing.py  # 데이터 전처리 관련 코드
 │   ├── train.py               # 모델 학습 스크립트
 │   └── evaluate.py            # 모델 평가 및 테스트 스크립트
 │
@@ -61,3 +59,9 @@ AI_Project1/
 ├── .gitignore              # Git 버전 관리에서 제외할 파일 목록
 └── README.md               # 프로젝트 설명, 사용 방법 등
 ```
+
+
+20230330\
+overfitting 밣생\
+Epoch 500/1000\
+157/157 [==============================] - 9s 56ms/step - loss: 2.4726e-04 - accuracy: 1.0000 - val_loss: 3.3710 - val_accuracy: 0.6564

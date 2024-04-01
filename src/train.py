@@ -1,8 +1,9 @@
 import tensorflow as tf
 from tensorflow.keras import datasets, layers, models, optimizers
-# models/cnn 모듈에서 CNN 함수를 불러옴
 from models.cnn import CNN
 import numpy as np
+from tensorflow.keras.callbacks import TensorBoard, ModelCheckpoint
+import datetime
 import os
 import sys
 import argparse
@@ -45,18 +46,22 @@ def main():
     parser = argparse.ArgumentParser(description='Train a CNN on the STL-10 dataset.')
     parser.add_argument('--epochs', type=int, default=10, help='Number of epochs to train the model.')
     args = parser.parse_args()
-
+    checkpoint_callback = ModelCheckpoint('models/trained_models/cnn.h5', save_weights_only=False,
+                                      save_freq='epoch', verbose=1)
     (train_images, train_labels), (test_images, test_labels) = load_and_preprocess_data()
     model = CNN()
     # 기존 모델이 존재할 경우, 불러와서 사용
     if os.path.exists('models/trained_models/cnn.h5'):
         model = models.load_model('models/trained_models/cnn.h5')
 
+    # 로그 디렉토리 생성
+    log_dir = "models/logs/fit/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+    tensorboard_callback = TensorBoard(log_dir=log_dir, histogram_freq=1)
     model.compile(optimizer='adam',
                   loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
                   metrics=['accuracy'])
     # argparse를 사용하여 받은 epochs 값을 사용
-    model.fit(train_images, train_labels, epochs=args.epochs, validation_data=(test_images, test_labels))
+    model.fit(train_images, train_labels, epochs=args.epochs, validation_data=(test_images, test_labels), callbacks=[tensorboard_callback])
 
     # 모델 저장
     model.save('models/trained_models/cnn.h5')

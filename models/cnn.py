@@ -12,18 +12,20 @@ def CNN(input_shape=(96, 96, 3), num_classes=10):
     model = models.Sequential([
         layers.Conv2D(kernel_size=(3,3), filters=64, activation='relu', input_shape=input_shape), # 로컬 패턴과 질감, 기본적인 형태를 감지하는 데 중점을 두기 위해 64개의 커널을 사용, 94x94x64
         layers.MaxPooling2D((2, 2)), # 풀링 레이어를 추가, 차원은 47x47x64
-        layers.Conv2D(kernel_size=(3,3), filters=256, activation='relu'), # 커널 수 256개로 늘려 세부적인 패턴을 감지, 45x45x256
+        layers.Conv2D(kernel_size=(3,3), filters=512, activation='relu'), # 45x45x512
         # depthwise separable convolution을 통해 모델의 크기를 줄이고, 계산량을 줄이기 위해 사용
-        layers.DepthwiseConv2D(kernel_size=(3,3), activation='relu'), # 43x43x256
+        layers.DepthwiseConv2D(kernel_size=(3,3), activation='relu'), # 43x43x512
         # pointwise convolution을 통해 depthwise separable convolution의 출력을 다시 합쳐줌
-        layers.Conv2D(filters=256, kernel_size=(1,1), activation='relu'), # 43x43x256
+        layers.Conv2D(filters=512, kernel_size=(1,1), activation='relu'), # 43x43x512
         # 풀링 레이어를 추가
-        layers.MaxPooling2D((2, 2)), # 21x21x256
+        layers.MaxPooling2D((2, 2)), # 21x21x512
         # 한번 더 depthwise separable convolution을 적용
-        layers.DepthwiseConv2D(kernel_size=(3,3), activation='relu'), # 19x19x256
-        layers.Conv2D(filters=256, kernel_size=(1,1), activation='relu'), # 19x19x256
-        layers.GlobalAveragePooling2D(), # 256
-        layers.Dense(128, activation='relu'), # 128
+        layers.DepthwiseConv2D(kernel_size=(3,3), activation='relu'), # 19x19x512
+        layers.Conv2D(filters=512, kernel_size=(1,1), activation='relu'), # 19x19x512
+        layers.GlobalAveragePooling2D(), # 512
+        # 512개의 뉴런을 가진 완전 연결 레이어를 추가
+        layers.Dense(512, activation='relu'), # 512
+        # softmax 활성화 함수를 사용하여 10개의 클래스에 대한 확률을 출력
         layers.Dense(num_classes) # 10
     ])
     return model
