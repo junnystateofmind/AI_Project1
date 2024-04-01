@@ -96,7 +96,7 @@ def main():
     model.compile(optimizer=optimizers.Adam(learning_rate=args.lr), loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True), metrics=['accuracy'])
 
     # 커스텀 모델 체크포인트 콜백
-    custom_checkpoint_callback = CustomModelCheckpoint('models/trained_models/cnn_{epoch}.h5', save_freq=5)
+    custom_checkpoint_callback = CustomModelCheckpoint('models/trained_models/cnn_{epoch}.h5', save_freq=10)
 
     # argparse를 사용하여 받은 epochs만큼 모델 학습
     model.fit(train_generator, epochs=args.epochs, validation_data=(test_images, test_labels), callbacks=[tensorboard_callback, lr_scheduler, custom_checkpoint_callback])
