@@ -37,16 +37,21 @@ def CNN(input_shape=(96, 96, 3), num_classes=10):
     x = residual_block(x, 512)
     x = layers.MaxPooling2D((2, 2))(x)
 
-    x = residual_block(x, 512)
+    x = residual_block(x, 1024)
     x = layers.MaxPooling2D((2, 2))(x)
 
-    x = residual_block(x, 512)
+    x = residual_block(x, 2048)
     x = layers.MaxPooling2D((2, 2))(x)
 
-    # 전역 평균 풀링과 분류 레이어
+    # # 전역 평균 풀링과 분류 레이어
     x = layers.GlobalAveragePooling2D()(x)
     x = layers.Dense(512, activation='relu')(x)
     outputs = layers.Dense(num_classes)(x)
+
+    # 각주 부분은 GlobalAveragePooling2D를 사용하지 않고 Flatten과 Dense 레이어를 사용한 경우
+    # x = layers.Flatten()(x)
+    # x = layers.Dense(64, activation='relu')(x)
+    # outputs = layers.Dense(num_classes)(x)
 
     model = models.Model(inputs=inputs, outputs=outputs)
     return model

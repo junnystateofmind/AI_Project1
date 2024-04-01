@@ -1,6 +1,6 @@
 # AI_Project1
 
-**서울대학교 24-1학기 인공지능 Term Project**
+## **서울대학교 24-1학기 인공지능 Term Project** ##
 
 
 
@@ -32,6 +32,9 @@ PLAGIARISM WILL NOT BE TOLERATED: Please be aware that copying assignments will 
 - CNN 모델을 설계하고 STL-10 데이터셋을 학습시키는 프로젝트
 - Tensorflow 기반 CNN 모델 설계 및 학습
 
+개인적으로 세운 세부 목표는 다음과 같다
+- 모델 파라미터는 가능한 적으면서, 성능은 90% 이상 나오도록 설계
+
 
 ```bash
 AI_Project1/
@@ -61,7 +64,66 @@ AI_Project1/
 ```
 
 
-20230330\
-overfitting 밣생\
-Epoch 500/1000\
-157/157 [==============================] - 9s 56ms/step - loss: 2.4726e-04 - accuracy: 1.0000 - val_loss: 3.3710 - val_accuracy: 0.6564
+# 작업 로그 # 
+
+- 2024.04.01
+  ```bash
+    ==================================================================================================
+    Total params: 1,397,642
+    Trainable params: 1,397,642
+    Non-trainable params: 0
+    __________________________________________________________________________________________________
+    Epoch 100/100 
+    157/157 [==============================] - 20s 131ms/step - loss: 2.1908e-05 - accuracy: 1.0000 - val_loss: 3.5760 - val_accuracy: 0.6679
+    35 에포크 정도에서 overfitting이 발생하는 것으로 보임
+    파라미터 크기는 16.1MB으로, 더 늘려도 될 것으로 보임
+    보통의 
+```
+
+# How to run in Colab #
+
+드라이브 마운트
+```bash
+from google.colab import drive
+drive.mount('/content/drive')
+```
+
+프로젝트 디렉토리 이동 및 git clone
+```bash
+%cd /content/drive/MyDrive/AI_Project1/
+!git clone https://github.com/junnystateofmind/AI_Project1.git
+```
+git pull
+```bash
+!git checkout -- src/__pycache__/train.cpython-310.pyc # remove cache file
+!git pull
+```
+training data 다운로드
+```bash
+# loading training data
+from torchvision import datasets
+import torchvision.transforms as transforms
+import os
+
+path2data = '/content/drive/MyDrive/AI_Project1/data'
+
+# if not exists the path, make the path
+if not os.path.exists(path2data):
+    os.mkdir(path2data)
+
+data_transformer = transforms.Compose([transforms.ToTensor()])
+train_ds = datasets.STL10(path2data, split='train', download='True', transform=data_transformer)
+
+print(train_ds.data.shape)
+```
+
+모델 학습
+```bash
+!python -m src.train --epochs 100
+```
+
+텐서보드 실행
+```bash
+%load_ext tensorboard
+%tensorboard --logdir models/logs/fit
+```
