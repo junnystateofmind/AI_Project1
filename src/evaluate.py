@@ -16,9 +16,9 @@ def main():
     args = parser.parse_args()
     # 모델 로드
     if args.model == 'CNN':
-        model = tf.keras.models.load_model('models/cnn_epoch_' + str(args.epochs) + '.h5')
+        model = tf.keras.models.load_model('models/trained_models/cnn_epoch_' + str(args.epochs) + '.h5')
     elif args.model == 'EfficientNet':
-        model = tf.keras.models.load_model('models/EfficientNet_epoch_' + str(args.epochs) + '.h5')
+        model = tf.keras.models.load_model('models/trained_models/EfficientNet_epoch_' + str(args.epochs) + '.h5')
     else:
         raise ValueError('Unknown model type: {}'.format(args.model))
 
