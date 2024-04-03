@@ -21,7 +21,8 @@ def residual_block(x, filters):
 
     # 입력(x)과 shortcut을 더함
     x = layers.add([x, shortcut])
-    x = layers.Activation('leaky_relu')(x)
+    # 마지막 activation은 linear
+    x = layers.Activation('linear')(x)
 
     return x
 
@@ -48,7 +49,7 @@ def CNN(input_shape=(96, 96, 3), num_classes=10):
 
     # # 전역 평균 풀링과 분류 레이어
     x = layers.GlobalAveragePooling2D()(x)
-    x = layers.Dense(64, activation='leaky_relu')(x)
+    x = layers.Dense(64, activation='softmax')(x)
     outputs = layers.Dense(num_classes)(x)
 
     # 각주 부분은 GlobalAveragePooling2D를 사용하지 않고 Flatten과 Dense 레이어를 사용한 경우

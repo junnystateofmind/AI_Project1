@@ -1,6 +1,7 @@
 import tensorflow as tf
 from tensorflow.keras import datasets, layers, models, optimizers
 from models.cnn import CNN
+from models.EfficientNet import Customed_EfficientNet
 import numpy as np
 from tensorflow.keras.callbacks import TensorBoard, ModelCheckpoint, LearningRateScheduler, EarlyStopping, Callback
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
@@ -74,6 +75,7 @@ class CustomModelCheckpoint(Callback):
 def main():
     # argparse를 사용하여 커맨드 라인 인자 처리
     parser = argparse.ArgumentParser(description='Train a CNN on the STL-10 dataset.')
+    parser.add_argument('--model', type=str, default='CNN', help='Model to train.')
     parser.add_argument('--epochs', type=int, default=10, help='Number of epochs to train the model.')
     parser.add_argument('--batch_size', type=int, default=64, help='Batch size for training.')
     parser.add_argument('--lr', type=float, default=0.001, help='Initial learning rate.')
@@ -85,24 +87,30 @@ def main():
     train_generator = datagen.flow(train_images, train_labels, batch_size=args.batch_size)
     # scheduler
     lr_scheduler = LearningRateScheduler(scheduler)
-    model = CNN()
+    #args.model = 'CNN'
+    if args.model == 'CNN':
+        model = CNN()
+    elif args.model == 'EfficientNet':
+        model = Customed_EfficientNet()
+    else:
+        raise ValueError('Unknown model type: {}'.format(args.model))
     # 기존 모델이 존재할 경우, 불러와서 사용
-    if os.path.exists('models/trained_models/cnn.h5'):
-        model = models.load_model('models/trained_models/cnn.h5')
+    if os.path.exists('models/trained_models/' + args.model + '.h5'):
+        model = tf.keras.models.load_model('models/trained_models/' + args.model + '.h5')
 
     # 로그 디렉토리 생성
-    log_dir = "models/logs/fit/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+    log_dir = "models/logs/fit/" + args.model + '/' + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
     tensorboard_callback = TensorBoard(log_dir=log_dir, histogram_freq=1)
-    model.compile(optimizer=optimizers.Adam(learning_rate=args.lr), loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True), metrics=['accuracy'])
-
+    # 모델 컴파일
+    model.compile(optimizer=optimizers.Adam(learning_rate=args.lr), loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=False), metrics=['accuracy']) # 출력층 activation='softmax'로 설정했기 때문에 from_logits=False
     # 커스텀 모델 체크포인트 콜백
-    custom_checkpoint_callback = CustomModelCheckpoint('models/trained_models/cnn_{epoch}.h5', save_freq=10)
+    custom_checkpoint_callback = CustomModelCheckpoint('models/trained_models/' + args.model + '_epoch_{epoch}.h5', save_freq=5)
 
     # argparse를 사용하여 받은 epochs만큼 모델 학습
     model.fit(train_generator, epochs=args.epochs, validation_data=(test_images, test_labels), callbacks=[tensorboard_callback, lr_scheduler, custom_checkpoint_callback])
 
     # 모델 저장
-    model.save('models/trained_models/cnn.h5')
+    model.save('models/trained_models/' + args.model + '.h5')
 
 if __name__ == '__main__':
     main()
