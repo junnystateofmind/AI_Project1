@@ -11,7 +11,7 @@ def main():
     parser.add_argument('--model', type=str, default='cnn', help='Model to evaluate (cnn or efficientnet)')
     parser.add_argument('--epochs', type=int, default=50, help='Number of epochs to evaluate the model')
 
-    test_images, test_labels = load_and_preprocess_data()
+    (train_images, train_labels), (test_images, test_labels) = load_and_preprocess_data()
 
     args = parser.parse_args()
     # 모델 로드
