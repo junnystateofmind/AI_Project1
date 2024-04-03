@@ -130,6 +130,11 @@ print(train_ds.data.shape)
 !python -m src.train --model=(CNN, EfficientNet) --epochs=50 --batch_size=64 --lr=0.01
 ```
 
+모델 평가
+```bash
+!python -m src.evaluate --model=(CNN, EfficientNet)
+```
+
 텐서보드 실행
 ```bash
 %load_ext tensorboard

@@ -9,15 +9,16 @@ import argparse
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--model', type=str, default='cnn', help='Model to evaluate (cnn or efficientnet)')
+    parser.add_argument('--epochs', type=int, default=50, help='Number of epochs to evaluate the model')
 
     test_images, test_labels = load_and_preprocess_data()
 
     args = parser.parse_args()
     # 모델 로드
     if args.model == 'CNN':
-        model = tf.keras.models.load_model('models/cnn.h5')
+        model = tf.keras.models.load_model('models/cnn_epoch_' + str(args.epochs) + '.h5')
     elif args.model == 'EfficientNet':
-        model = tf.keras.models.load_model('models/efficientnet.h5')
+        model = tf.keras.models.load_model('models/EfficientNet_epoch_' + str(args.epochs) + '.h5')
     else:
         raise ValueError('Unknown model type: {}'.format(args.model))
 
