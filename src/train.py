@@ -1,7 +1,7 @@
 import tensorflow as tf
 from tensorflow.keras import datasets, layers, models, optimizers
 from models.cnn import CNN
-from models.EfficientNet import Customed_EfficientNet
+from models.EfficientNet import Customed_EfficientNetB0, Customed_EfficientNetB4
 import numpy as np
 from tensorflow.keras.callbacks import TensorBoard, ModelCheckpoint, LearningRateScheduler, EarlyStopping, Callback
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
@@ -90,8 +90,10 @@ def main():
     #args.model = 'CNN'
     if args.model == 'CNN':
         model = CNN()
-    elif args.model == 'EfficientNet':
-        model = Customed_EfficientNet()
+    elif args.model == 'EfficientNetB0':
+        model = Customed_EfficientNetB0()
+    elif args.model == 'EfficientNetB4':
+        model = Customed_EfficientNetB4()
     else:
         raise ValueError('Unknown model type: {}'.format(args.model))
     # 기존 모델이 존재할 경우, 불러와서 사용
@@ -104,7 +106,7 @@ def main():
     # 모델 컴파일
     model.compile(optimizer=optimizers.Adam(learning_rate=args.lr), loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=False), metrics=['accuracy']) # 출력층 activation='softmax'로 설정했기 때문에 from_logits=False
     # 커스텀 모델 체크포인트 콜백
-    custom_checkpoint_callback = CustomModelCheckpoint('models/trained_models/' + args.model + '_epoch_{epoch}.h5', save_freq=5)
+    custom_checkpoint_callback = CustomModelCheckpoint('models/trained_models/' + args.model + '_epoch_{epoch}.h5', save_freq=10)
 
     # argparse를 사용하여 받은 epochs만큼 모델 학습
     model.fit(train_generator, epochs=args.epochs, validation_data=(test_images, test_labels), callbacks=[tensorboard_callback, lr_scheduler, custom_checkpoint_callback])
