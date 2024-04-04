@@ -117,8 +117,8 @@ def main():
     else:
         raise ValueError('Unknown model type: {}'.format(args.model))
     # 기존 모델이 존재할 경우, 불러와서 사용
-    if args.start_epoch > 0 and os.path.exists('models/trained_models/' + args.model + '_epoch_' + str(args.start_epoch) + '.h5'):
-        model = tf.keras.models.load_model('models/trained_models/' + args.model + '_epoch_' + str(args.start_epoch) + '.h5')
+    if args.start_epoch > 0 and os.path.exists('models/trained_models/' + args.model + '/' + args.model + '_epoch_' + str(args.start_epoch) + '.h5'):
+        model = tf.keras.models.load_model('models/trained_models/' + args.model + '/' + args.model + '_epoch_' + str(args.start_epoch) + '.h5')
 
     # 로그 디렉토리 생성
     log_dir = "models/logs/fit/" + args.model + '/' + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
@@ -126,7 +126,7 @@ def main():
     # 모델 컴파일
     model.compile(optimizer=optimizers.Adam(learning_rate=args.lr), loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=False), metrics=['accuracy']) # 출력층 activation='softmax'로 설정했기 때문에 from_logits=False
     # 커스텀 모델 체크포인트 콜백
-    custom_checkpoint_callback = CustomModelCheckpoint('models/trained_models/' + args.model + '_epoch_{epoch}.h5', save_freq=10)
+    custom_checkpoint_callback = CustomModelCheckpoint('models/trained_models/' + args.model + '/' + args.model + '_epoch_{epoch}.h5', save_freq=10)
 
     # argparse를 사용하여 받은 epochs만큼 모델 학습
     fine_tuning_models = ['EfficientNetB0', 'EfficientNetB3', 'EfficientNetB4']
@@ -139,7 +139,7 @@ def main():
     model.fit(train_generator, epochs=args.epochs, validation_data=(test_images, test_labels), callbacks=callbacks)
 
     # 모델 저장
-    model.save('models/trained_models/' + args.model + '.h5')
+    model.save('models/trained_models/' + args.model + '/' + args.model + '_epoch_' + str(args.epochs) + '.h5')
 
 if __name__ == '__main__':
     main()
