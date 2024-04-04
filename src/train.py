@@ -79,6 +79,7 @@ def main():
     parser.add_argument('--epochs', type=int, default=10, help='Number of epochs to train the model.')
     parser.add_argument('--batch_size', type=int, default=64, help='Batch size for training.')
     parser.add_argument('--lr', type=float, default=0.001, help='Initial learning rate.')
+    parser.add_argument('--start_epoch', type=int, default=0, help='Epoch to start training from.')
 
     args = parser.parse_args()
     (train_images, train_labels), (test_images, test_labels) = load_and_preprocess_data()
@@ -97,8 +98,8 @@ def main():
     else:
         raise ValueError('Unknown model type: {}'.format(args.model))
     # 기존 모델이 존재할 경우, 불러와서 사용
-    if os.path.exists('models/trained_models/' + args.model + '.h5'):
-        model = tf.keras.models.load_model('models/trained_models/' + args.model + '.h5')
+    if args.start_epoch > 0 and os.path.exists('models/trained_models/' + args.model + '_epoch_' + str(args.start_epoch) + '.h5'):
+        model = tf.keras.models.load_model('models/trained_models/' + args.model + '_epoch_' + str(args.start_epoch) + '.h5')
 
     # 로그 디렉토리 생성
     log_dir = "models/logs/fit/" + args.model + '/' + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
