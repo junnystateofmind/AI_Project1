@@ -129,13 +129,14 @@ def main():
     custom_checkpoint_callback = CustomModelCheckpoint('models/trained_models/' + args.model + '/' + args.model + '_epoch_{epoch}.h5', save_freq=10)
 
     # argparse를 사용하여 받은 epochs만큼 모델 학습
-    fine_tuning_models = ['EfficientNetB0', 'EfficientNetB3', 'EfficientNetB4']
-    if args.model in fine_tuning_models:
-        unfreeze_callback = UnfreezeLayersCallback(unfreeze_at_epoch=args.unfreeze_at_epoch, model=model)
-        callbacks = [tensorboard_callback, lr_scheduler, custom_checkpoint_callback, unfreeze_callback]
-    else:
-        callbacks = [tensorboard_callback, lr_scheduler, custom_checkpoint_callback]
+    # fine_tuning_models = ['EfficientNetB0', 'EfficientNetB3', 'EfficientNetB4']
+    # if args.model in fine_tuning_models:
+    #     unfreeze_callback = UnfreezeLayersCallback(unfreeze_at_epoch=args.unfreeze_at_epoch, model=model)
+    #     callbacks = [tensorboard_callback, lr_scheduler, custom_checkpoint_callback, unfreeze_callback]
+    # else:
+    #     callbacks = [tensorboard_callback, lr_scheduler, custom_checkpoint_callback]
 
+    callbacks = [tensorboard_callback, lr_scheduler, custom_checkpoint_callback]
     model.fit(train_generator, epochs=args.epochs, validation_data=(test_images, test_labels), callbacks=callbacks)
 
     # 모델 저장

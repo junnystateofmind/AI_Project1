@@ -325,7 +325,7 @@ print(train_ds.data.shape)
 
 모델 학습
 ```bash
-!python -m src.train --model=(CNN, EfficientNetB0, EfficientNetB4) --epochs=50 --batch_size=64 --lr=0.01
+!python -m src.train --model=(CNN, EfficientNetB0, EfficientNetB4) --epochs=50 --batch_size=64 --lr=0.01 --unfreeze_at_epoch=30 --start_epoch=0
 ```
 
 모델 평가
