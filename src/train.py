@@ -96,6 +96,7 @@ def main():
     parser.add_argument('--batch_size', type=int, default=64, help='Batch size for training.')
     parser.add_argument('--lr', type=float, default=0.001, help='Initial learning rate.')
     parser.add_argument('--start_epoch', type=int, default=0, help='Epoch to start training from.')
+    parser.add_argument('--unfreeze_at_epoch', type=int, default=0, help='Epoch to unfreeze top layers at.')
 
     args = parser.parse_args()
     (train_images, train_labels), (test_images, test_labels) = load_and_preprocess_data()
@@ -130,7 +131,7 @@ def main():
     # argparse를 사용하여 받은 epochs만큼 모델 학습
     fine_tuning_models = ['EfficientNetB0', 'EfficientNetB3', 'EfficientNetB4']
     if args.model in fine_tuning_models:
-        unfreeze_callback = UnfreezeLayersCallback(unfreeze_at_epoch=0.5*args.epochs, model=model)
+        unfreeze_callback = UnfreezeLayersCallback(unfreeze_at_epoch=args.unfreeze_at_epoch, model=model)
         callbacks = [tensorboard_callback, lr_scheduler, custom_checkpoint_callback, unfreeze_callback]
     else:
         callbacks = [tensorboard_callback, lr_scheduler, custom_checkpoint_callback]
