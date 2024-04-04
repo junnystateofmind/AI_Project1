@@ -130,7 +130,7 @@ def main():
     # argparse를 사용하여 받은 epochs만큼 모델 학습
     fine_tuning_models = ['EfficientNetB0', 'EfficientNetB3', 'EfficientNetB4']
     if args.model in fine_tuning_models:
-        unfreeze_callback = UnfreezeLayersCallback(unfreeze_at_epoch=10, model=model)
+        unfreeze_callback = UnfreezeLayersCallback(unfreeze_at_epoch=0.5*args.epochs, model=model)
         callbacks = [tensorboard_callback, lr_scheduler, custom_checkpoint_callback, unfreeze_callback]
     else:
         callbacks = [tensorboard_callback, lr_scheduler, custom_checkpoint_callback]
