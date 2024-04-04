@@ -1,7 +1,7 @@
 import tensorflow as tf
 from tensorflow.keras import datasets, layers, models, optimizers
 from models.cnn import CNN
-from models.EfficientNet import Customed_EfficientNetB0, Customed_EfficientNetB4
+from models.EfficientNet import Customed_EfficientNetB0, Customed_EfficientNetB3, Customed_EfficientNetB4
 import numpy as np
 from tensorflow.keras.callbacks import TensorBoard, ModelCheckpoint, LearningRateScheduler, EarlyStopping, Callback
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
@@ -58,6 +58,22 @@ def scheduler(epoch, lr):
     else:
         return lr * tf.math.exp(-0.1)
 
+# 아래 콜백은 특정 에포크에 도달했을 때 상위 레이어의 학습 가능 상태를 변경
+class UnfreezeLayersCallback(Callback):
+    def __init__(self, unfreeze_at_epoch, model):
+        super(UnfreezeLayersCallback, self).__init__()
+        self.unfreeze_at_epoch = unfreeze_at_epoch
+        self.model = model
+
+    def on_epoch_begin(self, epoch, logs=None):
+        if epoch == self.unfreeze_at_epoch:
+            # 특정 에포크에 도달했을 때 상위 레이어의 학습 가능 상태를 변경
+            for layer in self.model.layers[-10:]:
+                layer.trainable = True
+            # 레이어 상태 변경 후 모델을 다시 컴파일
+            self.model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+            print(f"Unfreezing top layers at epoch {epoch+1}")
+
 
 class CustomModelCheckpoint(Callback):
     def __init__(self, filepath, save_freq):
@@ -93,6 +109,8 @@ def main():
         model = CNN()
     elif args.model == 'EfficientNetB0':
         model = Customed_EfficientNetB0()
+    elif args.model == 'EfficientNetB3':
+        model = Customed_EfficientNetB3()
     elif args.model == 'EfficientNetB4':
         model = Customed_EfficientNetB4()
     else:
@@ -110,7 +128,14 @@ def main():
     custom_checkpoint_callback = CustomModelCheckpoint('models/trained_models/' + args.model + '_epoch_{epoch}.h5', save_freq=10)
 
     # argparse를 사용하여 받은 epochs만큼 모델 학습
-    model.fit(train_generator, epochs=args.epochs, validation_data=(test_images, test_labels), callbacks=[tensorboard_callback, lr_scheduler, custom_checkpoint_callback])
+    fine_tuning_models = ['EfficientNetB0', 'EfficientNetB3', 'EfficientNetB4']
+    if args.model in fine_tuning_models:
+        unfreeze_callback = UnfreezeLayersCallback(unfreeze_at_epoch=10, model=model)
+        callbacks = [tensorboard_callback, lr_scheduler, custom_checkpoint_callback, unfreeze_callback]
+    else:
+        callbacks = [tensorboard_callback, lr_scheduler, custom_checkpoint_callback]
+
+    model.fit(train_generator, epochs=args.epochs, validation_data=(test_images, test_labels), callbacks=callbacks)
 
     # 모델 저장
     model.save('models/trained_models/' + args.model + '.h5')
