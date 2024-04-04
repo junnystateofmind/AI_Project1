@@ -17,8 +17,10 @@ def main():
     # 모델 로드
     if args.model == 'CNN':
         model = tf.keras.models.load_model('models/trained_models/cnn_epoch_' + str(args.epochs) + '.h5')
-    elif args.model == 'EfficientNet':
-        model = tf.keras.models.load_model('models/trained_models/EfficientNet_epoch_' + str(args.epochs) + '.h5')
+    elif args.model == 'EfficientNetB0':
+        model = tf.keras.models.load_model('models/trained_models/EfficientNetB0_epoch_' + str(args.epochs) + '.h5')
+    elif args.model == 'EfficientNetB4':
+        model = tf.keras.models.load_model('models/trained_models/EfficientNetB4_epoch_' + str(args.epochs) + '.h5')
     else:
         raise ValueError('Unknown model type: {}'.format(args.model))
 

@@ -9,6 +9,10 @@ def Customed_EfficientNetB0(input_shape=(96, 96, 3), num_classes=10):
     # base_model을 추론 모드로 설정합니다.
     x = EfficientNetB0(include_top=False, weights='imagenet', input_shape=(96, 96, 3))(inputs)
 
+    # 상위 레이어 학습 가능하게 설정
+    for layer in x.layers[-10:]:
+        layer.trainable = True
+
     x = layers.GlobalAveragePooling2D()(x)
     x = layers.Dense(64, activation='leaky_relu')(x)
     outputs = layers.Dense(num_classes, activation='softmax')(x)
@@ -22,6 +26,10 @@ def Customed_EfficientNetB4(input_shape=(96, 96, 3), num_classes=10):
 
     # base_model을 추론 모드로 설정합니다.
     x = EfficientNetB4(include_top=False, weights='imagenet', input_shape=(96, 96, 3))(inputs)
+
+    # 상위 레이어 학습 가능하게 설정
+    for layer in x.layers[-10:]:
+        layer.trainable = True
 
     x = layers.GlobalAveragePooling2D()(x)
     x = layers.Dense(64, activation='leaky_relu')(x)
