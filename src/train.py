@@ -1,7 +1,7 @@
 import tensorflow as tf
 from tensorflow.keras import datasets, layers, models, optimizers
 from models.cnn import CNN
-from models.EfficientNet import Customed_EfficientNetB0, Customed_EfficientNetB3, Customed_EfficientNetB4
+from models.EfficientNet import Customed_EfficientNetB0, Customed_EfficientNetB3, Customed_EfficientNetB4, Customed_EfficientNetB6, Customed_EfficientNetB7
 import numpy as np
 from tensorflow.keras.callbacks import TensorBoard, ModelCheckpoint, LearningRateScheduler, EarlyStopping, Callback
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
