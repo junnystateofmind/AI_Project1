@@ -43,7 +43,8 @@ AI_Project1/
 │   └── stl10_binary/       # STL-10 데이터셋
 │
 ├── models/                 # 모델 아키텍처 및 학습된 모델 파일
-│   ├── cnn_model.py        # CNN 모델 아키텍처 정의
+│   ├── cnn_model.py  
+│   ├── EfficientNet.py     # Transfer Learning 모델
 │   └── trained_models/     # 학습된 모델 파일 저장 위치
 │
 ├── notebooks/              # Jupyter 노트북 파일
@@ -285,7 +286,239 @@ AI_Project1/
   val_accuracy가 갑자기 확 오르는 경우가 생김 흠...
   Transfer Learning에서는 Valid Accuracy가 느리게 수렴해 이에 따라 스케줄러를 다르게 적용할 필요가 있어보임
   ```
+- 2024.04.04
+     ```bash
+  2024-04-04 09:26:19.454781: E external/local_xla/xla/stream_executor/cuda/cuda_dnn.cc:9261] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered
+  2024-04-04 09:26:19.454831: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:607] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered
+  2024-04-04 09:26:19.456308: E external/local_xla/xla/stream_executor/cuda/cuda_blas.cc:1515] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered
+  2024-04-04 09:26:19.464512: I tensorflow/core/platform/cpu_feature_guard.cc:182] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+  To enable the following instructions: AVX2 AVX512F FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+  2024-04-04 09:26:20.546734: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Could not find TensorRT
+  2024-04-04 09:26:23.258439: I external/local_xla/xla/stream_executor/cuda/cuda_executor.cc:901] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero. See more at https://github.com/torvalds/linux/blob/v6.0/Documentation/ABI/testing/sysfs-bus-pci#L344-L355
+  2024-04-04 09:26:23.310472: I external/local_xla/xla/stream_executor/cuda/cuda_executor.cc:901] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero. See more at https://github.com/torvalds/linux/blob/v6.0/Documentation/ABI/testing/sysfs-bus-pci#L344-L355
+  2024-04-04 09:26:23.310788: I external/local_xla/xla/stream_executor/cuda/cuda_executor.cc:901] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero. See more at https://github.com/torvalds/linux/blob/v6.0/Documentation/ABI/testing/sysfs-bus-pci#L344-L355
+  2024-04-04 09:26:23.311600: I external/local_xla/xla/stream_executor/cuda/cuda_executor.cc:901] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero. See more at https://github.com/torvalds/linux/blob/v6.0/Documentation/ABI/testing/sysfs-bus-pci#L344-L355
+  2024-04-04 09:26:23.311826: I external/local_xla/xla/stream_executor/cuda/cuda_executor.cc:901] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero. See more at https://github.com/torvalds/linux/blob/v6.0/Documentation/ABI/testing/sysfs-bus-pci#L344-L355
+  2024-04-04 09:26:23.311995: I external/local_xla/xla/stream_executor/cuda/cuda_executor.cc:901] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero. See more at https://github.com/torvalds/linux/blob/v6.0/Documentation/ABI/testing/sysfs-bus-pci#L344-L355
+  2024-04-04 09:26:23.408097: I external/local_xla/xla/stream_executor/cuda/cuda_executor.cc:901] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero. See more at https://github.com/torvalds/linux/blob/v6.0/Documentation/ABI/testing/sysfs-bus-pci#L344-L355
+  2024-04-04 09:26:23.408366: I external/local_xla/xla/stream_executor/cuda/cuda_executor.cc:901] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero. See more at https://github.com/torvalds/linux/blob/v6.0/Documentation/ABI/testing/sysfs-bus-pci#L344-L355
+  2024-04-04 09:26:23.408516: W tensorflow/core/common_runtime/gpu/gpu_bfc_allocator.cc:47] Overriding orig_value setting because the TF_FORCE_GPU_ALLOW_GROWTH environment variable is set. Original config value was 0.
+  2024-04-04 09:26:23.408621: I external/local_xla/xla/stream_executor/cuda/cuda_executor.cc:901] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero. See more at https://github.com/torvalds/linux/blob/v6.0/Documentation/ABI/testing/sysfs-bus-pci#L344-L355
+  2024-04-04 09:26:23.408762: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1929] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 13949 MB memory:  -> device: 0, name: Tesla T4, pci bus id: 0000:00:04.0, compute capability: 7.5
+  2024-04-04 09:26:24.562122: W external/local_tsl/tsl/framework/cpu_allocator_impl.cc:83] Allocation of 552960000 exceeds 10% of free system memory.
+  Epoch 1/100
+  2024-04-04 09:27:00.493684: E tensorflow/core/grappler/optimizers/meta_optimizer.cc:961] layout failed: INVALID_ARGUMENT: Size of values 0 does not match size of permutation 4 @ fanin shape inmodel/efficientnetb3/block1b_drop/dropout/SelectV2-2-TransposeNHWCToNCHW-LayoutOptimizer
+  2024-04-04 09:27:05.360175: I external/local_xla/xla/stream_executor/cuda/cuda_dnn.cc:454] Loaded cuDNN version 8906
+  2024-04-04 09:27:08.502092: I external/local_xla/xla/service/service.cc:168] XLA service 0x7e5fd1c63fc0 initialized for platform CUDA (this does not guarantee that XLA will be used). Devices:
+  2024-04-04 09:27:08.502141: I external/local_xla/xla/service/service.cc:176]   StreamExecutor device (0): Tesla T4, Compute Capability 7.5
+  2024-04-04 09:27:08.512583: I tensorflow/compiler/mlir/tensorflow/utils/dump_mlir_util.cc:269] disabling MLIR crash reproducer, set env var `MLIR_CRASH_REPRODUCER_DIRECTORY` to enable.
+  WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+  I0000 00:00:1712222828.684226   12823 device_compiler.h:186] Compiled cluster using XLA!  This line is logged at most once for the lifetime of the process.
+  20/20 [==============================] - ETA: 0s - loss: 2.1325 - accuracy: 0.29142024-04-04 09:27:54.315320: W external/local_tsl/tsl/framework/cpu_allocator_impl.cc:83] Allocation of 884736000 exceeds 10% of free system memory.
+  20/20 [==============================] - 100s 2s/step - loss: 2.1325 - accuracy: 0.2914 - val_loss: 32907577344.0000 - val_accuracy: 0.1000 - lr: 0.0100
+  Epoch 2/100
+  20/20 [==============================] - 32s 2s/step - loss: 1.4523 - accuracy: 0.4588 - val_loss: 33173753856.0000 - val_accuracy: 0.1000 - lr: 0.0100
+  Epoch 3/100
+  20/20 [==============================] - 35s 2s/step - loss: 1.3025 - accuracy: 0.5130 - val_loss: 1385018.8750 - val_accuracy: 0.1000 - lr: 0.0100
+  Epoch 4/100
+  20/20 [==============================] - 32s 2s/step - loss: 1.1304 - accuracy: 0.5818 - val_loss: 2212.1543 - val_accuracy: 0.1000 - lr: 0.0100
+  Epoch 5/100
+  20/20 [==============================] - 35s 2s/step - loss: 1.0730 - accuracy: 0.6142 - val_loss: 128.8517 - val_accuracy: 0.1000 - lr: 0.0100
+  Epoch 6/100
+  20/20 [==============================] - 35s 2s/step - loss: 0.9981 - accuracy: 0.6400 - val_loss: 332.0110 - val_accuracy: 0.1000 - lr: 0.0100
+  Epoch 7/100
+  20/20 [==============================] - 34s 2s/step - loss: 0.8718 - accuracy: 0.6888 - val_loss: 592.0634 - val_accuracy: 0.1000 - lr: 0.0100
+  Epoch 8/100
+  20/20 [==============================] - 36s 2s/step - loss: 0.8196 - accuracy: 0.7038 - val_loss: 4675.1675 - val_accuracy: 0.1000 - lr: 0.0100
+  Epoch 9/100
+  20/20 [==============================] - 32s 2s/step - loss: 0.7715 - accuracy: 0.7278 - val_loss: 13.7131 - val_accuracy: 0.1000 - lr: 0.0100
+  Epoch 10/100
+  20/20 [==============================] - ETA: 0s - loss: 0.7300 - accuracy: 0.7486/usr/local/lib/python3.10/dist-packages/keras/src/engine/training.py:3103: UserWarning: You are saving your model as an HDF5 file via `model.save()`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')`.
+    saving_api.save_model(
+  20/20 [==============================] - 44s 2s/step - loss: 0.7300 - accuracy: 0.7486 - val_loss: 8.5190 - val_accuracy: 0.1000 - lr: 0.0100
+  Epoch 11/100
+  20/20 [==============================] - 35s 2s/step - loss: 0.7107 - accuracy: 0.7446 - val_loss: 10.4412 - val_accuracy: 0.1000 - lr: 0.0090
+  Epoch 12/100
+  20/20 [==============================] - 31s 2s/step - loss: 0.6621 - accuracy: 0.7734 - val_loss: 10.2468 - val_accuracy: 0.1000 - lr: 0.0082
+  Epoch 13/100
+  20/20 [==============================] - 30s 2s/step - loss: 0.6282 - accuracy: 0.7764 - val_loss: 3.2888 - val_accuracy: 0.1030 - lr: 0.0074
+  Epoch 14/100
+  20/20 [==============================] - 36s 2s/step - loss: 0.5657 - accuracy: 0.8062 - val_loss: 4.7193 - val_accuracy: 0.0994 - lr: 0.0067
+  Epoch 15/100
+  20/20 [==============================] - 34s 2s/step - loss: 0.4941 - accuracy: 0.8250 - val_loss: 3.9463 - val_accuracy: 0.0994 - lr: 0.0061
+  Epoch 16/100
+  20/20 [==============================] - 36s 2s/step - loss: 0.4976 - accuracy: 0.8212 - val_loss: 6.2096 - val_accuracy: 0.0911 - lr: 0.0055
+  Epoch 17/100
+  20/20 [==============================] - 35s 2s/step - loss: 0.4263 - accuracy: 0.8514 - val_loss: 5.7741 - val_accuracy: 0.1000 - lr: 0.0050
+  Epoch 18/100
+  20/20 [==============================] - 30s 2s/step - loss: 0.4075 - accuracy: 0.8598 - val_loss: 3.7077 - val_accuracy: 0.1009 - lr: 0.0045
+  Epoch 19/100
+  20/20 [==============================] - 35s 2s/step - loss: 0.3843 - accuracy: 0.8648 - val_loss: 10.4970 - val_accuracy: 0.1000 - lr: 0.0041
+  Epoch 20/100
+  20/20 [==============================] - 34s 2s/step - loss: 0.3467 - accuracy: 0.8782 - val_loss: 5.3337 - val_accuracy: 0.1047 - lr: 0.0037
+  Epoch 21/100
+  20/20 [==============================] - 35s 2s/step - loss: 0.3210 - accuracy: 0.8934 - val_loss: 4.5549 - val_accuracy: 0.1220 - lr: 0.0033
+  Epoch 22/100
+  20/20 [==============================] - 34s 2s/step - loss: 0.2747 - accuracy: 0.9052 - val_loss: 3.9679 - val_accuracy: 0.1015 - lr: 0.0030
+  Epoch 23/100
+  20/20 [==============================] - 35s 2s/step - loss: 0.2710 - accuracy: 0.9028 - val_loss: 3.1206 - val_accuracy: 0.1187 - lr: 0.0027
+  Epoch 24/100
+  20/20 [==============================] - 33s 2s/step - loss: 0.2503 - accuracy: 0.9106 - val_loss: 3.5655 - val_accuracy: 0.1002 - lr: 0.0025
+  Epoch 25/100
+  20/20 [==============================] - 34s 2s/step - loss: 0.2305 - accuracy: 0.9168 - val_loss: 4.0430 - val_accuracy: 0.1000 - lr: 0.0022
+  Epoch 26/100
+  20/20 [==============================] - 31s 2s/step - loss: 0.2221 - accuracy: 0.9252 - val_loss: 4.0093 - val_accuracy: 0.0925 - lr: 0.0020
+  Epoch 27/100
+  20/20 [==============================] - 30s 2s/step - loss: 0.2160 - accuracy: 0.9250 - val_loss: 3.8117 - val_accuracy: 0.1377 - lr: 0.0018
+  Epoch 28/100
+  20/20 [==============================] - 35s 2s/step - loss: 0.1814 - accuracy: 0.9362 - val_loss: 2.6674 - val_accuracy: 0.3511 - lr: 0.0017
+  Epoch 29/100
+  20/20 [==============================] - 31s 2s/step - loss: 0.1724 - accuracy: 0.9414 - val_loss: 2.8216 - val_accuracy: 0.2716 - lr: 0.0015
+  Epoch 30/100
+  20/20 [==============================] - 34s 2s/step - loss: 0.1628 - accuracy: 0.9432 - val_loss: 4.2656 - val_accuracy: 0.2084 - lr: 0.0014
+  Epoch 31/100
+  20/20 [==============================] - 34s 2s/step - loss: 0.1673 - accuracy: 0.9424 - val_loss: 4.6168 - val_accuracy: 0.1721 - lr: 0.0012
+  Epoch 32/100
+  20/20 [==============================] - 34s 2s/step - loss: 0.1357 - accuracy: 0.9522 - val_loss: 4.9460 - val_accuracy: 0.2011 - lr: 0.0011
+  Epoch 33/100
+  20/20 [==============================] - 35s 2s/step - loss: 0.1299 - accuracy: 0.9556 - val_loss: 2.7148 - val_accuracy: 0.3754 - lr: 0.0010
+  Epoch 34/100
+  20/20 [==============================] - 35s 2s/step - loss: 0.1114 - accuracy: 0.9612 - val_loss: 2.3643 - val_accuracy: 0.4570 - lr: 9.0718e-04
+  Epoch 35/100
+  20/20 [==============================] - 34s 2s/step - loss: 0.1131 - accuracy: 0.9626 - val_loss: 2.8249 - val_accuracy: 0.3660 - lr: 8.2085e-04
+  Epoch 36/100
+  20/20 [==============================] - 30s 2s/step - loss: 0.1128 - accuracy: 0.9586 - val_loss: 2.2664 - val_accuracy: 0.4894 - lr: 7.4273e-04
+  Epoch 37/100
+  20/20 [==============================] - 30s 2s/step - loss: 0.1002 - accuracy: 0.9658 - val_loss: 7.0591 - val_accuracy: 0.1011 - lr: 6.7205e-04
+  Epoch 38/100
+  20/20 [==============================] - 33s 2s/step - loss: 0.1057 - accuracy: 0.9604 - val_loss: 7.6825 - val_accuracy: 0.1011 - lr: 6.0810e-04
+  Epoch 39/100
+  20/20 [==============================] - 34s 2s/step - loss: 0.0962 - accuracy: 0.9684 - val_loss: 7.4776 - val_accuracy: 0.1053 - lr: 5.5023e-04
+  Epoch 40/100
+  20/20 [==============================] - 32s 2s/step - loss: 0.0895 - accuracy: 0.9702 - val_loss: 3.0392 - val_accuracy: 0.3246 - lr: 4.9787e-04
+  Epoch 41/100
+  20/20 [==============================] - 32s 2s/step - loss: 0.0863 - accuracy: 0.9714 - val_loss: 4.9480 - val_accuracy: 0.2246 - lr: 4.5049e-04
+  Epoch 42/100
+  20/20 [==============================] - 34s 2s/step - loss: 0.0831 - accuracy: 0.9734 - val_loss: 1.8396 - val_accuracy: 0.6141 - lr: 4.0762e-04
+  Epoch 43/100
+  20/20 [==============================] - 35s 2s/step - loss: 0.0824 - accuracy: 0.9722 - val_loss: 6.9307 - val_accuracy: 0.1177 - lr: 3.6883e-04
+  Epoch 44/100
+  20/20 [==============================] - 30s 2s/step - loss: 0.0822 - accuracy: 0.9710 - val_loss: 2.2205 - val_accuracy: 0.5311 - lr: 3.3373e-04
+  Epoch 45/100
+  20/20 [==============================] - 35s 2s/step - loss: 0.0762 - accuracy: 0.9724 - val_loss: 2.7562 - val_accuracy: 0.5228 - lr: 3.0197e-04
+  Epoch 46/100
+  20/20 [==============================] - 34s 2s/step - loss: 0.0740 - accuracy: 0.9770 - val_loss: 2.5422 - val_accuracy: 0.5514 - lr: 2.7324e-04
+  Epoch 47/100
+  20/20 [==============================] - 32s 2s/step - loss: 0.0707 - accuracy: 0.9750 - val_loss: 3.7038 - val_accuracy: 0.4079 - lr: 2.4723e-04
+  Epoch 48/100
+  20/20 [==============================] - 32s 2s/step - loss: 0.0697 - accuracy: 0.9742 - val_loss: 4.1753 - val_accuracy: 0.3085 - lr: 2.2371e-04
+  Epoch 49/100
+  20/20 [==============================] - 32s 2s/step - loss: 0.0675 - accuracy: 0.9766 - val_loss: 1.6498 - val_accuracy: 0.6790 - lr: 2.0242e-04
+  Epoch 50/100
+  20/20 [==============================] - 34s 2s/step - loss: 0.0633 - accuracy: 0.9768 - val_loss: 0.9636 - val_accuracy: 0.7716 - lr: 1.8316e-04
+  Epoch 51/100
+  20/20 [==============================] - 31s 2s/step - loss: 0.0721 - accuracy: 0.9772 - val_loss: 0.7062 - val_accuracy: 0.8366 - lr: 1.6573e-04
+  Epoch 52/100
+  20/20 [==============================] - 30s 2s/step - loss: 0.0601 - accuracy: 0.9816 - val_loss: 2.5219 - val_accuracy: 0.5257 - lr: 1.4996e-04
+  Epoch 53/100
+  20/20 [==============================] - 36s 2s/step - loss: 0.0695 - accuracy: 0.9774 - val_loss: 2.1198 - val_accuracy: 0.5853 - lr: 1.3569e-04
+  Epoch 54/100
+  20/20 [==============================] - 30s 2s/step - loss: 0.0723 - accuracy: 0.9756 - val_loss: 1.4386 - val_accuracy: 0.6914 - lr: 1.2277e-04
+  Epoch 55/100
+  20/20 [==============================] - 35s 2s/step - loss: 0.0652 - accuracy: 0.9788 - val_loss: 1.7573 - val_accuracy: 0.6384 - lr: 1.1109e-04
+  Epoch 56/100
+  20/20 [==============================] - 37s 2s/step - loss: 0.0614 - accuracy: 0.9774 - val_loss: 1.4232 - val_accuracy: 0.6931 - lr: 1.0052e-04
+  Epoch 57/100
+  20/20 [==============================] - 30s 2s/step - loss: 0.0575 - accuracy: 0.9802 - val_loss: 1.1344 - val_accuracy: 0.7462 - lr: 9.0953e-05
+  Epoch 58/100
+  20/20 [==============================] - 35s 2s/step - loss: 0.0594 - accuracy: 0.9818 - val_loss: 1.9138 - val_accuracy: 0.6246 - lr: 8.2297e-05
+  Epoch 59/100
+  20/20 [==============================] - 30s 2s/step - loss: 0.0591 - accuracy: 0.9816 - val_loss: 1.9777 - val_accuracy: 0.6130 - lr: 7.4466e-05
+  Epoch 60/100
+  20/20 [==============================] - 34s 2s/step - loss: 0.0536 - accuracy: 0.9818 - val_loss: 1.1586 - val_accuracy: 0.7536 - lr: 6.7379e-05
+  Epoch 61/100
+  20/20 [==============================] - 31s 2s/step - loss: 0.0549 - accuracy: 0.9812 - val_loss: 1.0249 - val_accuracy: 0.7793 - lr: 6.0967e-05
+  Epoch 62/100
+  20/20 [==============================] - 35s 2s/step - loss: 0.0602 - accuracy: 0.9776 - val_loss: 1.0810 - val_accuracy: 0.7713 - lr: 5.5166e-05
+  Epoch 63/100
+  20/20 [==============================] - 31s 2s/step - loss: 0.0644 - accuracy: 0.9792 - val_loss: 0.8483 - val_accuracy: 0.8126 - lr: 4.9916e-05
+  Epoch 64/100
+  20/20 [==============================] - 36s 2s/step - loss: 0.0591 - accuracy: 0.9796 - val_loss: 0.9112 - val_accuracy: 0.7984 - lr: 4.5166e-05
+  Epoch 65/100
+  20/20 [==============================] - 32s 2s/step - loss: 0.0531 - accuracy: 0.9814 - val_loss: 0.8411 - val_accuracy: 0.8106 - lr: 4.0868e-05
+  Epoch 66/100
+  20/20 [==============================] - 34s 2s/step - loss: 0.0526 - accuracy: 0.9828 - val_loss: 0.8044 - val_accuracy: 0.8183 - lr: 3.6979e-05
+  Epoch 67/100
+  20/20 [==============================] - 36s 2s/step - loss: 0.0534 - accuracy: 0.9808 - val_loss: 0.8903 - val_accuracy: 0.8054 - lr: 3.3460e-05
+  Epoch 68/100
+  20/20 [==============================] - 30s 2s/step - loss: 0.0589 - accuracy: 0.9790 - val_loss: 0.6818 - val_accuracy: 0.8420 - lr: 3.0275e-05
+  Epoch 69/100
+  20/20 [==============================] - 35s 2s/step - loss: 0.0499 - accuracy: 0.9806 - val_loss: 0.6848 - val_accuracy: 0.8430 - lr: 2.7394e-05
+  Epoch 70/100
+  20/20 [==============================] - 32s 2s/step - loss: 0.0572 - accuracy: 0.9780 - val_loss: 0.6718 - val_accuracy: 0.8461 - lr: 2.4787e-05
+  Epoch 71/100
+  20/20 [==============================] - 31s 2s/step - loss: 0.0534 - accuracy: 0.9804 - val_loss: 0.6531 - val_accuracy: 0.8489 - lr: 2.2429e-05
+  Epoch 72/100
+  20/20 [==============================] - 32s 2s/step - loss: 0.0532 - accuracy: 0.9816 - val_loss: 0.6417 - val_accuracy: 0.8518 - lr: 2.0294e-05
+  Epoch 73/100
+  20/20 [==============================] - 34s 2s/step - loss: 0.0550 - accuracy: 0.9810 - val_loss: 0.6352 - val_accuracy: 0.8525 - lr: 1.8363e-05
+  Epoch 74/100
+  20/20 [==============================] - 34s 2s/step - loss: 0.0587 - accuracy: 0.9790 - val_loss: 0.6598 - val_accuracy: 0.8478 - lr: 1.6616e-05
+  Epoch 75/100
+  20/20 [==============================] - 35s 2s/step - loss: 0.0537 - accuracy: 0.9830 - val_loss: 0.6545 - val_accuracy: 0.8496 - lr: 1.5034e-05
+  Epoch 76/100
+  20/20 [==============================] - 34s 2s/step - loss: 0.0574 - accuracy: 0.9810 - val_loss: 0.6521 - val_accuracy: 0.8508 - lr: 1.3604e-05
+  Epoch 77/100
+  20/20 [==============================] - 31s 2s/step - loss: 0.0696 - accuracy: 0.9774 - val_loss: 0.6425 - val_accuracy: 0.8516 - lr: 1.2309e-05
+  Epoch 78/100
+  20/20 [==============================] - 34s 2s/step - loss: 0.0527 - accuracy: 0.9812 - val_loss: 0.6556 - val_accuracy: 0.8508 - lr: 1.1138e-05
+  Epoch 79/100
+  20/20 [==============================] - 32s 2s/step - loss: 0.0615 - accuracy: 0.9782 - val_loss: 0.6490 - val_accuracy: 0.8522 - lr: 1.0078e-05
+  Epoch 80/100
+  20/20 [==============================] - 33s 2s/step - loss: 0.0614 - accuracy: 0.9792 - val_loss: 0.6466 - val_accuracy: 0.8509 - lr: 9.1188e-06
+  Epoch 81/100
+  20/20 [==============================] - 35s 2s/step - loss: 0.0587 - accuracy: 0.9812 - val_loss: 0.6269 - val_accuracy: 0.8535 - lr: 8.2510e-06
+  Epoch 82/100
+  20/20 [==============================] - 34s 2s/step - loss: 0.0593 - accuracy: 0.9774 - val_loss: 0.6273 - val_accuracy: 0.8524 - lr: 7.4658e-06
+  Epoch 83/100
+  20/20 [==============================] - 30s 2s/step - loss: 0.0582 - accuracy: 0.9816 - val_loss: 0.6163 - val_accuracy: 0.8575 - lr: 6.7554e-06
+  Epoch 84/100
+  20/20 [==============================] - 33s 2s/step - loss: 0.0531 - accuracy: 0.9830 - val_loss: 0.6112 - val_accuracy: 0.8562 - lr: 6.1125e-06
+  Epoch 85/100
+  20/20 [==============================] - 35s 2s/step - loss: 0.0600 - accuracy: 0.9802 - val_loss: 0.6151 - val_accuracy: 0.8555 - lr: 5.5308e-06
+  Epoch 86/100
+  20/20 [==============================] - 35s 2s/step - loss: 0.0599 - accuracy: 0.9808 - val_loss: 0.6192 - val_accuracy: 0.8543 - lr: 5.0045e-06
+  Epoch 87/100
+  20/20 [==============================] - 30s 2s/step - loss: 0.0621 - accuracy: 0.9792 - val_loss: 0.6215 - val_accuracy: 0.8528 - lr: 4.5283e-06
+  Epoch 88/100
+  20/20 [==============================] - 35s 2s/step - loss: 0.0605 - accuracy: 0.9806 - val_loss: 0.6204 - val_accuracy: 0.8534 - lr: 4.0973e-06
+  Epoch 89/100
+  20/20 [==============================] - 30s 2s/step - loss: 0.0589 - accuracy: 0.9786 - val_loss: 0.6284 - val_accuracy: 0.8528 - lr: 3.7074e-06
+  Epoch 90/100
+  20/20 [==============================] - 37s 2s/step - loss: 0.0506 - accuracy: 0.9832 - val_loss: 0.6282 - val_accuracy: 0.8529 - lr: 3.3546e-06
+  Epoch 91/100
+  20/20 [==============================] - 33s 2s/step - loss: 0.0619 - accuracy: 0.9784 - val_loss: 0.6245 - val_accuracy: 0.8539 - lr: 3.0354e-06
+  Epoch 92/100
+  20/20 [==============================] - 34s 2s/step - loss: 0.0595 - accuracy: 0.9788 - val_loss: 0.6204 - val_accuracy: 0.8558 - lr: 2.7465e-06
+  Epoch 93/100
+  20/20 [==============================] - 30s 2s/step - loss: 0.0535 - accuracy: 0.9822 - val_loss: 0.6160 - val_accuracy: 0.8564 - lr: 2.4852e-06
+  Epoch 94/100
+  20/20 [==============================] - 30s 2s/step - loss: 0.0524 - accuracy: 0.9804 - val_loss: 0.6167 - val_accuracy: 0.8560 - lr: 2.2487e-06
+  Epoch 95/100
+  20/20 [==============================] - 32s 2s/step - loss: 0.0512 - accuracy: 0.9820 - val_loss: 0.6168 - val_accuracy: 0.8561 - lr: 2.0347e-06
+  Epoch 96/100
+  20/20 [==============================] - 31s 2s/step - loss: 0.0516 - accuracy: 0.9826 - val_loss: 0.6214 - val_accuracy: 0.8551 - lr: 1.8410e-06
+  Epoch 97/100
+  20/20 [==============================] - 30s 2s/step - loss: 0.0449 - accuracy: 0.9854 - val_loss: 0.6215 - val_accuracy: 0.8547 - lr: 1.6659e-06
+  Epoch 98/100
+  20/20 [==============================] - 35s 2s/step - loss: 0.0530 - accuracy: 0.9812 - val_loss: 0.6231 - val_accuracy: 0.8547 - lr: 1.5073e-06
+  Epoch 99/100
+  20/20 [==============================] - 35s 2s/step - loss: 0.0564 - accuracy: 0.9780 - val_loss: 0.6239 - val_accuracy: 0.8554 - lr: 1.3639e-06
+  Epoch 100/100
+  20/20 [==============================] - 37s 2s/step - loss: 0.0596 - accuracy: 0.9792 - val_loss: 0.6223 - val_accuracy: 0.8551 - lr: 1.2341e-06   
 
+    ==================================================================================================
+```     
 # How to run in Colab #
 
 드라이브 마운트
@@ -325,7 +558,12 @@ print(train_ds.data.shape)
 
 모델 학습
 ```bash
-!python -m src.train --model=(CNN, EfficientNetB0, EfficientNetB4) --epochs=50 --batch_size=64 --lr=0.01 --unfreeze_at_epoch=30 --start_epoch=0
+!python -m src.train --model=(CNN, EfficientNetB0, EfficientNetB4) --epochs=50 --batch_size=64 --lr=0.01  --start_epoch=0
+```
+
+unfreeze 학습
+```bash
+!python -m src.unfreeze_train --model=(EfficientNetB0, EfficientNetB4 etc) --epochs=50 --batch_size=64 --lr=0.01 --model_path = 
 ```
 
 모델 평가
