@@ -563,7 +563,7 @@ print(train_ds.data.shape)
 
 unfreeze 학습
 ```bash
-!python -m src.unfreeze_train --model=(EfficientNetB0, EfficientNetB4 etc) --epochs=50 --batch_size=64 --lr=0.01 --model_path = 
+!python -m src.unfreeze_train --model=EfficientNetB4 --epochs=50 --start_epoch=70 --num_unfreeze_layer=5 --learning_rate=0.001```
 ```
 
 모델 평가

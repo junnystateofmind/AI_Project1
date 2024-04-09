@@ -44,6 +44,7 @@ def main():
     parser.add_argument('--num_unfreeze_layers', type=int, default=0, help='Number of layers to unfreeze')
     parser.add_argument('--learning_rate', type=float, default=0.001, help='Learning rate for the optimizer')
     parser.add_argument('--log_dir', type=str, default='logs/unfreeze_train', help='Directory for TensorBoard logs')
+    parser.add_argument('--batch_size', type=int, default=64, help='Batch size for training')
 
     args = parser.parse_args()
 
@@ -66,7 +67,7 @@ def main():
                   metrics=['accuracy'])
 
     # 커스텀 모델 체크포인트 콜백
-    custom_checkpoint_callback = CustomModelCheckpoint('models/trained_models/'+args.model+'/'+args.model+'_epoch_{epoch}.h5', save_freq=10)
+    custom_checkpoint_callback = CustomModelCheckpoint('models/trained_models/'+args.model+'/'+args.model+'_unfreeze_epoch_{epoch}.h5', save_freq=10)
     # TensorBoard 로그 디렉토리 설정
     log_dir = os.path.join(args.log_dir, datetime.datetime.now().strftime('%Y%m%d-%H%M%S'))
     tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir)
@@ -74,4 +75,7 @@ def main():
     # 모델 훈련
     callback = [tensorboard_callback, lr_scheduler, custom_checkpoint_callback]
     model.fit(train_generator, epochs=args.epochs, validation_data=(test_images, test_labels), callbacks=callback)
+
+    # 저장
+    model.save('models/trained_models/'+args.model+'/'+args.model+'_unfreeze_epoch_'+str(args.epochs)+'.h5')
 
