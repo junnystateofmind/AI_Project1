@@ -79,3 +79,7 @@ def main():
     # 저장
     model.save('models/trained_models/'+args.model+'/'+args.model+'_unfreeze_epoch_'+str(args.epochs)+'.h5')
 
+
+if __name__ == '__main__':
+    main()
+
