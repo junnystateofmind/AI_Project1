@@ -77,3 +77,11 @@ def SimpleCNN(input_shape=(96, 96, 3), num_classes=10):
     return model
 # 모델 요약
 
+# model = CNN()
+# model.summary()
+
+from tensorflow.keras.applications import EfficientNetB7
+
+model = EfficientNetB7(include_top=False, weights='imagenet', input_shape=(96, 96, 3))
+
+model.summary()

@@ -20,8 +20,8 @@ def load_teacher_model(path):
     # model.get_layer(name='predictions').name='teacher_predictions'
     return teacher_model
 
-def create_student_model(input_shape, num_classes):
-    student_model = CNN(input_shape=input_shape, num_classes=num_classes)
+def create_student_model(input_shape, num_classes, student_base_model):
+    student_model = student_base_model(input_shape=input_shape, num_classes=num_classes)
     student_model.summary()
     # 모델의 이름 변경
     student_model._name = 'student_model'
@@ -51,10 +51,11 @@ def main():
     parser.add_argument('--num_classes', type=int, default=10, help='Number of classes in the dataset.')
     parser.add_argument('--batch_size', type=int, default=64, help='Batch size for training.')
     parser.add_argument('--epochs', type=int, default=10, help='Number of epochs to train.')
+    parser.add_argument('--student_base_model', type=str, default='EfficientNetB0', help='Base model for the student model.')
     args = parser.parse_args()
 
     teacher_model = load_teacher_model(args.teacher_model_path)
-    student_model = create_student_model(args.input_shape, args.num_classes)
+    student_model = create_student_model(args.input_shape, args.num_classes, globals()[args.student_base_model])
     distillation_model = create_distillation_model(teacher_model, student_model, args.input_shape)
     print("distillation_model summary")
     distillation_model.summary()
@@ -66,8 +67,8 @@ def main():
             'distillation_student_output': keras.losses.SparseCategoricalCrossentropy()
         },
         loss_weights={
-            'distillation_teacher_output': 0.4,
-            'distillation_student_output': 0.6
+            'distillation_teacher_output': 0.6,
+            'distillation_student_output': 0.4
         },
         metrics={
             'distillation_student_output': ['accuracy']

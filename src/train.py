@@ -82,8 +82,15 @@ class CustomModelCheckpoint(Callback):
         self.save_freq = save_freq
 
     def on_epoch_end(self, epoch, logs=None):
-        if (epoch + 1) % self.save_freq == 0:  # 에포크는 0부터 시작하므로 +1
+        if (epoch + 1) % self.save_freq == 0:
+            # 저장 전 텐서 타입 확인 및 변환
+            # 예시: 모델의 가중치나 출력을 numpy 배열로 변환
+            # weights = [w.numpy() if isinstance(w, tf.Tensor) else w for w in self.model.get_weights()]
+            # self.model.set_weights(weights)
+            # 실제 모델 저장
             self.model.save(self.filepath.format(epoch=epoch + 1))
+
+
 
 # 모델 정의
 
@@ -114,6 +121,10 @@ def main():
         model = Customed_EfficientNetB3()
     elif args.model == 'EfficientNetB4':
         model = Customed_EfficientNetB4()
+    elif args.model == 'EfficientNetB6':
+        model = Customed_EfficientNetB6()
+    elif args.model == 'EfficientNetB7':
+        model = Customed_EfficientNetB7()
     else:
         raise ValueError('Unknown model type: {}'.format(args.model))
     # 기존 모델이 존재할 경우, 불러와서 사용
@@ -126,6 +137,7 @@ def main():
     # 모델 컴파일
     model.compile(optimizer=optimizers.Adam(learning_rate=args.lr), loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=False), metrics=['accuracy']) # 출력층 activation='softmax'로 설정했기 때문에 from_logits=False
     # 커스텀 모델 체크포인트 콜백
+    # 메인 함수 내에서 콜백 사용
     custom_checkpoint_callback = CustomModelCheckpoint('models/trained_models/' + args.model + '/' + args.model + '_epoch_{epoch}.h5', save_freq=10)
 
     # argparse를 사용하여 받은 epochs만큼 모델 학습
