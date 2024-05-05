@@ -83,12 +83,12 @@ class CustomModelCheckpoint(Callback):
 
     def on_epoch_end(self, epoch, logs=None):
         if (epoch + 1) % self.save_freq == 0:
-            # 저장 전 텐서 타입 확인 및 변환
-            # 예시: 모델의 가중치나 출력을 numpy 배열로 변환
-            # weights = [w.numpy() if isinstance(w, tf.Tensor) else w for w in self.model.get_weights()]
-            # self.model.set_weights(weights)
-            # 실제 모델 저장
+            # 모든 텐서를 NumPy 배열로 변환
+            weights = [w.numpy() if isinstance(w, tf.Tensor) else w for w in self.model.get_weights()]
+            self.model.set_weights(weights)
+            # 모델 저장
             self.model.save(self.filepath.format(epoch=epoch + 1))
+
 
 
 
