@@ -1,7 +1,6 @@
 import tensorflow as tf
 from tensorflow.keras import datasets, layers, models, optimizers
 from models.cnn import CNN
-from models.EfficientNet import Customed_EfficientNetB0, Customed_EfficientNetB3, Customed_EfficientNetB4, Customed_EfficientNetB6, Customed_EfficientNetB7
 import numpy as np
 from tensorflow.keras.callbacks import TensorBoard, ModelCheckpoint, LearningRateScheduler, EarlyStopping, Callback
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
@@ -116,14 +115,19 @@ def main():
     if args.model == 'CNN':
         model = CNN()
     elif args.model == 'EfficientNetB0':
+        from models.EfficientNet import Customed_EfficientNetB0
         model = Customed_EfficientNetB0()
     elif args.model == 'EfficientNetB3':
+        from models.EfficientNet import Customed_EfficientNetB3
         model = Customed_EfficientNetB3()
     elif args.model == 'EfficientNetB4':
+        from models.EfficientNet import Customed_EfficientNetB4
         model = Customed_EfficientNetB4()
     elif args.model == 'EfficientNetB6':
+        from models.EfficientNet import Customed_EfficientNetB6
         model = Customed_EfficientNetB6()
     elif args.model == 'EfficientNetB7':
+        from models.EfficientNet import Customed_EfficientNetB7
         model = Customed_EfficientNetB7()
     else:
         raise ValueError('Unknown model type: {}'.format(args.model))
@@ -138,7 +142,7 @@ def main():
     model.compile(optimizer=optimizers.Adam(learning_rate=args.lr), loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=False), metrics=['accuracy']) # 출력층 activation='softmax'로 설정했기 때문에 from_logits=False
     # 커스텀 모델 체크포인트 콜백
     # 메인 함수 내에서 콜백 사용
-    custom_checkpoint_callback = CustomModelCheckpoint('models/trained_models/' + args.model + '/' + args.model + '_epoch_{epoch}.h5', save_freq=10)
+    custom_checkpoint_callback = CustomModelCheckpoint('models/trained_models/' + args.model + '/' + args.model + '_epoch_{epoch}.h5', save_freq=1)
 
     # argparse를 사용하여 받은 epochs만큼 모델 학습
     # fine_tuning_models = ['EfficientNetB0', 'EfficientNetB3', 'EfficientNetB4']
