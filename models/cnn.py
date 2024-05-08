@@ -7,34 +7,38 @@ from tensorflow.keras import layers, models
 # 500 training images (10 pre-defined folds), 800 test images per class.
 # 100000 unlabeled images for unsupervised learning. These examples are extracted from a similar but broader distribution of images. For instance, it contains other types of animals (bears, rabbits, etc.) and vehicles (trains, buses, etc.) in addition to the ones in the labeled set.
 # Images were acquired from labeled examples on ImageNet.
-
 def residual_block(x, filters):
     """Depthwise 및 Pointwise Convolution을 사용한 잔차 블록."""
-    # 입력과 동일한 차원의 출력을 생성하기 위해, 필터 수에 맞는 1x1 합성곱 레이어로 shortcut 경로 생성
+    # Shortcut pathway, 1x1 convolution
     shortcut = layers.Conv2D(filters, (1, 1), padding='same')(x)
+    shortcut = layers.BatchNormalization()(shortcut)
 
     # Depthwise Convolution
-    x = layers.DepthwiseConv2D((3, 3), activation='leaky_relu', padding='same')(x)
+    x = layers.DepthwiseConv2D((3, 3), padding='same')(x)
+    x = layers.BatchNormalization()(x)
+    x = layers.LeakyReLU(alpha=0.1)(x)
 
     # Pointwise Convolution
-    x = layers.Conv2D(filters, (1, 1), activation='leaky_relu', padding='same')(x)
+    x = layers.Conv2D(filters, (1, 1), padding='same')(x)
+    x = layers.BatchNormalization()(x)
+    x = layers.LeakyReLU(alpha=0.1)(x)
 
-    # 입력(x)과 shortcut을 더함
+    # Add shortcut to the main path before activation
     x = layers.add([x, shortcut])
-    # 마지막 activation은 linear
     x = layers.Activation('linear')(x)
 
     return x
 
-
 def CNN(input_shape=(96, 96, 3), num_classes=10):
     inputs = layers.Input(shape=input_shape)
 
-    # 첫 번째 합성곱 레이어
-    x = layers.Conv2D(64, (3, 3), activation='leaky_relu')(inputs)
+    # First Convolutional Layer
+    x = layers.Conv2D(64, (3, 3), padding='same')(inputs)
+    x = layers.BatchNormalization()(x)
+    x = layers.LeakyReLU(alpha=0.1)(x)
     x = layers.MaxPooling2D((2, 2))(x)
 
-    # 잔차 블록 추가
+    # Residual Blocks with increased filter numbers
     x = residual_block(x, 256)
     x = layers.MaxPooling2D((2, 2))(x)
 
@@ -47,17 +51,13 @@ def CNN(input_shape=(96, 96, 3), num_classes=10):
     x = residual_block(x, 2048)
     x = layers.MaxPooling2D((2, 2))(x)
 
-    # # 전역 평균 풀링과 분류 레이어
+    # Global Average Pooling followed by Classification Layer
     x = layers.GlobalAveragePooling2D()(x)
-    x = layers.Dense(64, activation='softmax')(x)
-    outputs = layers.Dense(num_classes)(x)
-
-    # 각주 부분은 GlobalAveragePooling2D를 사용하지 않고 Flatten과 Dense 레이어를 사용한 경우
-    # x = layers.Flatten()(x)
-    # x = layers.Dense(64, activation='relu')(x)
-    # outputs = layers.Dense(num_classes)(x)
+    x = layers.Dropout(0.5)(x)  # Dropout added to combat overfitting
+    outputs = layers.Dense(num_classes, activation='softmax')(x)
 
     model = models.Model(inputs=inputs, outputs=outputs)
+    model.summary()
     return model
 
 
