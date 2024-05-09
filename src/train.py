@@ -1,3 +1,5 @@
+import math
+
 import tensorflow as tf
 from tensorflow.keras import datasets, layers, models, optimizers
 from models.cnn import CNN
@@ -56,6 +58,15 @@ def scheduler(epoch, lr):
         return lr
     else:
         return lr * tf.math.exp(-0.1)
+
+def custom_scheduler(epoch, lr):
+    wave_height = 0.2
+    if epoch < 10:
+        return lr
+    else:
+        decay_rate = 0.1
+        return lr * tf.exp(-decay_rate) * (1 + tf.cos(epoch * tf.constant(np.pi) / 5) * wave_height)
+
 
 class CosineAnnealingWarmUpRestarts(tf.keras.callbacks.Callback):
     def __init__(self, initial_learning_rate, first_decay_steps, t_mul=2.0, m_mul=1.0, alpha_zero=0.0, alpha=0.0, last_epoch=-1):
