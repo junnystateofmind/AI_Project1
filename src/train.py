@@ -57,6 +57,32 @@ def scheduler(epoch, lr):
     else:
         return lr * tf.math.exp(-0.1)
 
+class CosineAnnealingWarmUpRestarts(tf.keras.callbacks.Callback):
+    def __init__(self, initial_learning_rate, first_decay_steps, t_mul=2.0, m_mul=1.0, alpha_zero=0.0, alpha=0.0, last_epoch=-1):
+        super(CosineAnnealingWarmUpRestarts, self).__init__()
+        self.initial_learning_rate = initial_learning_rate
+        self.first_decay_steps = first_decay_steps
+        self.t_mul = t_mul
+        self.m_mul = m_mul
+        self.alpha_zero = alpha_zero
+        self.alpha = alpha
+        self.last_epoch = last_epoch
+        self.next_restart = first_decay_steps
+        self.steps = 0
+
+    def on_epoch_begin(self, epoch, logs=None):
+        if epoch == self.next_restart:
+            self.alpha = self.alpha_zero + (0.5 * (self.initial_learning_rate - self.alpha_zero) * (1 + np.cos(np.pi * self.steps / self.first_decay_steps)))
+            self.next_restart += int((self.first_decay_steps - self.next_restart) * self.t_mul)
+            self.first_decay_steps *= self.t_mul
+            self.initial_learning_rate *= self.m_mul
+            self.steps = 0
+        self.steps += 1
+
+    def on_batch_begin(self, batch, logs=None):
+        tf.keras.backend.set_value(self.model.optimizer.lr, self.alpha)
+
+
 # 아래 콜백은 특정 에포크에 도달했을 때 상위 레이어의 학습 가능 상태를 변경
 class UnfreezeLayersCallback(Callback):
     def __init__(self, unfreeze_at_epoch, model):
@@ -103,6 +129,7 @@ def main():
     parser.add_argument('--lr', type=float, default=0.001, help='Initial learning rate.')
     parser.add_argument('--start_epoch', type=int, default=0, help='Epoch to start training from.')
     parser.add_argument('--unfreeze_at_epoch', type=int, default=0, help='Epoch to unfreeze top layers at.')
+    parser.add_argument('--scheduler', type = str, default = 'LearningRateScheduler', help = 'Learning rate scheduler to use.')
 
     args = parser.parse_args()
     (train_images, train_labels), (test_images, test_labels) = load_and_preprocess_data()
@@ -110,7 +137,12 @@ def main():
     datagen = create_data_augmentation_generator()
     train_generator = datagen.flow(train_images, train_labels, batch_size=args.batch_size)
     # scheduler
-    lr_scheduler = LearningRateScheduler(scheduler)
+    if args.scheduler == 'LearningRateScheduler':
+        lr_scheduler = LearningRateScheduler(scheduler)
+    elif args.scheduler == 'CosineAnnealingWarmUpRestarts':
+        lr_scheduler = CosineAnnealingWarmUpRestarts(initial_learning_rate=args.lr, first_decay_steps=10, t_mul=2.0, m_mul=1.0, alpha_zero=0.0, alpha=args.lr)
+    else:
+        raise ValueError('Unknown scheduler type: {}'.format(args.scheduler))
     #args.model = 'CNN'
     if args.model == 'CNN':
         model = CNN()
