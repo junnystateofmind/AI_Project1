@@ -42,10 +42,13 @@ def CNN(input_shape=(96, 96, 3), num_classes=10):
     x = residual_block(x, 256)
     x = layers.MaxPooling2D((2, 2))(x)
 
-    x = residual_block(x, 512)
+    x = residual_block(x, 2048)
     x = layers.MaxPooling2D((2, 2))(x)
 
-    x = residual_block(x, 1024)
+    x = residual_block(x, 2048)
+    x = layers.MaxPooling2D((2, 2))(x)
+
+    x = residual_block(x, 2048)
     x = layers.MaxPooling2D((2, 2))(x)
 
     x = residual_block(x, 2048)
@@ -53,7 +56,7 @@ def CNN(input_shape=(96, 96, 3), num_classes=10):
 
     # Global Average Pooling followed by Classification Layer
     x = layers.GlobalAveragePooling2D()(x)
-    x = layers.Dropout(0.5)(x)  # Dropout added to combat overfitting
+    x = layers.Dropout(0.7)(x)  # Dropout added to combat overfitting
     outputs = layers.Dense(num_classes, activation='softmax')(x)
 
     model = models.Model(inputs=inputs, outputs=outputs)
