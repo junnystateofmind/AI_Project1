@@ -61,10 +61,10 @@ def scheduler(epoch, lr):
 
 def custom_scheduler(epoch, lr):
     wave_height = 0.2
-    if epoch < 10:
+    if epoch < 30:
         return lr
     else:
-        decay_rate = 0.1
+        decay_rate = 0.05
         return lr * tf.exp(-decay_rate) * (1 + tf.cos(epoch * tf.constant(np.pi) / 5) * wave_height)
 
 
@@ -150,7 +150,7 @@ def main():
     # scheduler
     if args.scheduler == 'LearningRateScheduler':
         lr_scheduler = LearningRateScheduler(scheduler)
-    elif args.scheduler == 'custom'
+    elif args.scheduler == 'custom':
         lr_scheduler = LearningRateScheduler(custom_scheduler)
     elif args.scheduler == 'CosineAnnealingWarmUpRestarts':
         lr_scheduler = CosineAnnealingWarmUpRestarts(initial_learning_rate=args.lr, first_decay_steps=10, t_mul=2.0, m_mul=1.0, alpha_zero=0.0, alpha=args.lr)
