@@ -150,6 +150,8 @@ def main():
     # scheduler
     if args.scheduler == 'LearningRateScheduler':
         lr_scheduler = LearningRateScheduler(scheduler)
+    elif args.scheduler == 'custom'
+        lr_scheduler = LearningRateScheduler(custom_scheduler)
     elif args.scheduler == 'CosineAnnealingWarmUpRestarts':
         lr_scheduler = CosineAnnealingWarmUpRestarts(initial_learning_rate=args.lr, first_decay_steps=10, t_mul=2.0, m_mul=1.0, alpha_zero=0.0, alpha=args.lr)
     else:
