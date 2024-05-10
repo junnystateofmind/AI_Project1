@@ -55,21 +55,13 @@ def Customed_EfficientNetB6(input_shape=(96, 96, 3), num_classes=10):
     # base_model 객체를 생성합니다.
     base_model = EfficientNetB6(include_top=False, weights='imagenet', input_shape=input_shape)
 
-    for layer in base_model.layers:
-        layer.trainable = False
-    x = base_model.output
+    x = base_model(inputs)
     x = layers.GlobalAveragePooling2D()(x)
     x = layers.Dense(64)(x)
     x = layers.LeakyReLU()(x)
     outputs = layers.Dense(num_classes, activation='softmax')(x)
 
     model = models.Model(inputs=inputs, outputs=outputs)
-
-    # 마지막에서 3개 레이어를 unfreeze 합니다.
-    model.layers[-1].trainable = True  # 마지막 Dense 레이어
-    model.layers[-2].trainable = True  # LeakyReLU 레이어
-    model.layers[-3].trainable = True  # 첫 번째 Dense 레이어
-
     return model
 
 
@@ -79,22 +71,13 @@ def Customed_EfficientNetB7(input_shape=(96, 96, 3), num_classes=10):
     # base_model 객체를 생성합니다.
     base_model = EfficientNetB7(include_top=False, weights='imagenet', input_tensor=inputs)
 
-    for layer in base_model.layers:
-        layer.trainable = False
-
-    x = base_model.output
+    x = base_model(inputs)
     x = layers.GlobalAveragePooling2D()(x)
     x = layers.Dense(64)(x)
     x = layers.LeakyReLU()(x)
     outputs = layers.Dense(num_classes, activation='softmax')(x)
 
     model = models.Model(inputs=inputs, outputs=outputs)
-
-    # 마지막에서 3개 레이어를 unfreeze 합니다.
-    model.layers[-1].trainable = True  # 마지막 Dense 레이어
-    model.layers[-2].trainable = True  # LeakyReLU 레이어
-    model.layers[-3].trainable = True  # 첫 번째 Dense 레이어
-
     return model
 
 # 모델 생성
