@@ -173,7 +173,7 @@ def main():
     model.compile(optimizer=optimizers.Adam(learning_rate=args.lr), loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=False), metrics=['accuracy']) # 출력층 activation='softmax'로 설정했기 때문에 from_logits=False
     # 커스텀 모델 체크포인트 콜백
     # 메인 함수 내에서 콜백 사용
-    custom_checkpoint_callback = CustomModelCheckpoint('models/trained_models/' + args.model + '/' + args.model + '_' +  time.strftime("_%Y%m%d-%H%M%S") + '_epoch_' + str(args.epochs) + '.h5', save_freq=10)
+    custom_checkpoint_callback = CustomModelCheckpoint('models/trained_models/' + args.model + '_' + time.strftime("_%Y%m%d-%H%M%S") +  '/' + args.model + '_' +  time.strftime("_%Y%m%d-%H%M%S") + '_epoch_' + str(args.epochs) + '.h5', save_freq=10)
 
     # argparse를 사용하여 받은 epochs만큼 모델 학습
     # fine_tuning_models = ['EfficientNetB0', 'EfficientNetB3', 'EfficientNetB4']
