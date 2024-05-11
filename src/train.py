@@ -4,6 +4,7 @@ import tensorflow as tf
 from tensorflow.keras import datasets, layers, models, optimizers
 from models.cnn import CNN
 import numpy as np
+import time
 from tensorflow.keras.callbacks import TensorBoard, ModelCheckpoint, LearningRateScheduler, EarlyStopping, Callback
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import datetime
@@ -67,31 +68,16 @@ def custom_scheduler(epoch, lr):
         decay_rate = 0.05
         return lr * tf.exp(-decay_rate) * (1 + tf.cos(epoch * tf.constant(np.pi) / 5) * wave_height)
 
-
-class CosineAnnealingWarmUpRestarts(tf.keras.callbacks.Callback):
-    def __init__(self, initial_learning_rate, first_decay_steps, t_mul=2.0, m_mul=1.0, alpha_zero=0.0, alpha=0.0, last_epoch=-1):
-        super(CosineAnnealingWarmUpRestarts, self).__init__()
-        self.initial_learning_rate = initial_learning_rate
-        self.first_decay_steps = first_decay_steps
-        self.t_mul = t_mul
-        self.m_mul = m_mul
-        self.alpha_zero = alpha_zero
-        self.alpha = alpha
-        self.last_epoch = last_epoch
-        self.next_restart = first_decay_steps
-        self.steps = 0
-
-    def on_epoch_begin(self, epoch, logs=None):
-        if epoch == self.next_restart:
-            self.alpha = self.alpha_zero + (0.5 * (self.initial_learning_rate - self.alpha_zero) * (1 + np.cos(np.pi * self.steps / self.first_decay_steps)))
-            self.next_restart += int((self.first_decay_steps - self.next_restart) * self.t_mul)
-            self.first_decay_steps *= self.t_mul
-            self.initial_learning_rate *= self.m_mul
-            self.steps = 0
-        self.steps += 1
-
-    def on_batch_begin(self, batch, logs=None):
-        tf.keras.backend.set_value(self.model.optimizer.lr, self.alpha)
+def cosine_annealing_with_warmup(epoch, initial_learning_rate, first_decay_steps = 10, t_mul=2.0, m_mul=1.0, alpha_zero=0.0):
+    t_curr = epoch % first_decay_steps
+    if epoch < first_decay_steps:
+        alpha = alpha_zero + (initial_learning_rate - alpha_zero) * (1 + np.cos(np.pi * t_curr / first_decay_steps)) / 2
+    else:
+        if t_curr == 0:
+            first_decay_steps *= t_mul
+            initial_learning_rate *= m_mul
+        alpha = initial_learning_rate + (initial_learning_rate - alpha_zero) * (1 + np.cos(np.pi * t_curr / first_decay_steps)) / 2
+    return alpha
 
 
 # 아래 콜백은 특정 에포크에 도달했을 때 상위 레이어의 학습 가능 상태를 변경
@@ -153,7 +139,7 @@ def main():
     elif args.scheduler == 'custom':
         lr_scheduler = LearningRateScheduler(custom_scheduler)
     elif args.scheduler == 'CosineAnnealingWarmUpRestarts':
-        lr_scheduler = CosineAnnealingWarmUpRestarts(initial_learning_rate=args.lr, first_decay_steps=10, t_mul=2.0, m_mul=1.0, alpha_zero=0.0, alpha=args.lr)
+        lr_scheduler = LearningRateScheduler(lambda epoch: cosine_annealing_with_warmup(epoch, args.lr, first_decay_steps=10))
     else:
         raise ValueError('Unknown scheduler type: {}'.format(args.scheduler))
     #args.model = 'CNN'
@@ -187,7 +173,7 @@ def main():
     model.compile(optimizer=optimizers.Adam(learning_rate=args.lr), loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=False), metrics=['accuracy']) # 출력층 activation='softmax'로 설정했기 때문에 from_logits=False
     # 커스텀 모델 체크포인트 콜백
     # 메인 함수 내에서 콜백 사용
-    custom_checkpoint_callback = CustomModelCheckpoint('models/trained_models/' + args.model + '/' + args.model + '_epoch_{epoch}.h5', save_freq=1)
+    custom_checkpoint_callback = CustomModelCheckpoint('models/trained_models/' + args.model + '/' + args.model + '_' +  time.strftime("_%Y%m%d-%H%M%S") + '_epoch_' + str(args.epochs) + '.h5', save_freq=10)
 
     # argparse를 사용하여 받은 epochs만큼 모델 학습
     # fine_tuning_models = ['EfficientNetB0', 'EfficientNetB3', 'EfficientNetB4']
@@ -201,7 +187,7 @@ def main():
     model.fit(train_generator, epochs=args.epochs, validation_data=(test_images, test_labels), callbacks=callbacks)
 
     # 모델 저장
-    model.save('models/trained_models/' + args.model + '/' + args.model + '_epoch_' + str(args.epochs) + '.h5')
+    model.save('models/trained_models/' + args.model + '/' + args.model + '_' +  time.strftime("_%Y%m%d-%H%M%S") + '_epoch_' + str(args.epochs) + '.h5')
 
 if __name__ == '__main__':
     main()

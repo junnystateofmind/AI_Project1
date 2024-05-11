@@ -1,2 +1,4 @@
 data/
 models/trained_models/
+models/logs/
+models/.DS_Store

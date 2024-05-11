@@ -39,20 +39,22 @@ def CNN(input_shape=(96, 96, 3), num_classes=10):
     x = layers.MaxPooling2D((2, 2))(x)
 
     # Residual Blocks with increased filter numbers
+    x = residual_block(x, 128)
+    x = layers.MaxPooling2D((2, 2))(x)
+
     x = residual_block(x, 256)
     x = layers.MaxPooling2D((2, 2))(x)
 
     x = residual_block(x, 2048)
     x = layers.MaxPooling2D((2, 2))(x)
 
-    x = residual_block(x, 2048)
+    x = residual_block(x, 4096)
     x = layers.MaxPooling2D((2, 2))(x)
 
-    x = residual_block(x, 2048)
+    x = residual_block(x, 4096)
     x = layers.MaxPooling2D((2, 2))(x)
 
-    x = residual_block(x, 2048)
-    x = layers.MaxPooling2D((2, 2))(x)
+    x = residual_block(x, 256)
 
     # Global Average Pooling followed by Classification Layer
     x = layers.GlobalAveragePooling2D()(x)
@@ -80,5 +82,5 @@ def SimpleCNN(input_shape=(96, 96, 3), num_classes=10):
     return model
 # 모델 요약
 
-# model = CNN()
-# model.summary()
+model = CNN()
+model.summary()
